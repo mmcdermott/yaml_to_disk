@@ -1,5 +1,14 @@
 # `yaml_to_disk`
 
+[![PyPI - Version](https://img.shields.io/pypi/v/yaml_to_disk)](https://pypi.org/project/yaml_to_disk/)
+![python](https://img.shields.io/badge/-Python_3.12-blue?logo=python&logoColor=white)
+[![codecov](https://codecov.io/gh/mmcdermott/yaml_to_disk/graph/badge.svg?token=5RORKQOZF9)](https://codecov.io/gh/mmcdermott/yaml_to_disk)
+[![tests](https://github.com/mmcdermott/yaml_to_disk/actions/workflows/tests.yaml/badge.svg)](https://github.com/mmcdermott/yaml_to_disk/actions/workflows/tests.yml)
+[![code-quality](https://github.com/mmcdermott/yaml_to_disk/actions/workflows/code-quality-main.yaml/badge.svg)](https://github.com/mmcdermott/yaml_to_disk/actions/workflows/code-quality-main.yaml)
+[![license](https://img.shields.io/badge/License-MIT-green.svg?labelColor=gray)](https://github.com/mmcdermott/yaml_to_disk#license)
+[![PRs](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/mmcdermott/yaml_to_disk/pulls)
+[![contributors](https://img.shields.io/github/contributors/mmcdermott/yaml_to_disk.svg)](https://github.com/mmcdermott/yaml_to_disk/graphs/contributors)
+
 A simple tool to let you define a directory structure in yaml form, then populate it on disk in a single
 command. Highly useful for simplifying test case setup, espically in doctest settings where readability is
 critical.
