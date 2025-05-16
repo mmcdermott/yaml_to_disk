@@ -58,6 +58,39 @@ a,b,c
 
 ```
 
+You can also pass a filepath that contains the target yaml on disk, or a parsed view of the yaml contents
+(e.g., as a dictionary or a list):
+
+```python
+>>> with tempfile.TemporaryDirectory() as temp_dir:
+...     yaml_path = Path(temp_dir) / "target.yaml"
+...     _ = yaml_path.write_text(target_contents)
+...     with yaml_disk(yaml_path) as root_path:
+...         print_directory(root_path)
+├── a.json
+└── dir1
+    ├── sub1
+    │   └── file1.txt
+    └── sub2
+        ├── cfg.yaml
+        └── data.csv
+>>> as_list = ["foo.png"] # Note that this will only make an empty file with this name
+>>> with yaml_disk(as_list) as root_path:
+...     print_directory(root_path)
+└── foo.png
+>>> as_dict = {"foo.pkl": {"bar": "baz"}}
+>>> import pickle
+>>> with yaml_disk(as_dict) as root_path:
+...     print_directory(root_path)
+...     print("----------------------")
+...     with open(root_path / "foo.pkl", "rb") as f:
+...         print(f"foo.pkl contents: {pickle.load(f)}")
+└── foo.pkl
+----------------------
+foo.pkl contents: {'bar': 'baz'}
+
+```
+
 ### YAML Syntax
 
 The
@@ -81,10 +114,32 @@ DIR_NAME:
 
 ### Supported Extensions:
 
-| Extension | Description     | Accepts?                                                        | Write Method                                       |
-| --------- | --------------- | --------------------------------------------------------------- | -------------------------------------------------- |
-| `txt`     | Plain text file | Plain strings                                                   | Written as is                                      |
-| `json`    | JSON file       | Any JSON compatible object                                      | Written via `json.dump`                            |
-| `yaml`    | YAML file       | Any YAML compatible object                                      | Written via `yaml.dump`                            |
-| `pkl`     | Pickle file     | Any pickle serializable                                         | Written via `pickle.dump`                          |
-| `csv`     | CSV file        | CSV data in either string, column-map, or a list of rows format | See [`CSVFile`](src/file_types/csv.py) for details |
+| Extension    | Description     | Accepts?                                                        | Write Method                                       |
+| ------------ | --------------- | --------------------------------------------------------------- | -------------------------------------------------- |
+| `txt`        | Plain text file | Plain strings                                                   | Written as is                                      |
+| `json`       | JSON file       | Any JSON compatible object                                      | Written via `json.dump`                            |
+| `yaml`,`yml` | YAML file       | Any YAML compatible object                                      | Written via `yaml.dump`                            |
+| `pkl`        | Pickle file     | Any pickle serializable                                         | Written via `pickle.dump`                          |
+| `csv`        | CSV file        | CSV data in either string, column-map, or a list of rows format | See [`CSVFile`](src/file_types/csv.py) for details |
+
+Other extensions can be used, but only in the empty files mode.
+
+#### Adding new extensions:
+
+You can easily add your own file extensions to be supported in your custom python packages by simply
+subclassing the [`FileType`](src/file_types/base.py) abstract base class and implementing the necessary
+methods and class variables. Then, you can register it as a supported extension by adding an entry point to
+your `pyproject.toml` file, like this:
+
+```toml
+[project.entry-points."yaml_to_disk.file_types"]
+txt = "yaml_to_disk.file_types.txt:TextFile"
+json = "yaml_to_disk.file_types.json:JSONFile"
+pkl = "yaml_to_disk.file_types.pkl:PickleFile"
+yaml = "yaml_to_disk.file_types.yaml:YAMLFile"
+csv = "yaml_to_disk.file_types.csv:CSVFile"
+```
+
+Then, the system will automatically know how to match and use your new file type. Note that you cannot
+overwrite existing file extensions in this way; instead, if an overwrite is attempted, upon the load of all
+registered file types, an error will be raised.
