@@ -36,7 +36,7 @@ yaml = "yaml_to_disk.file_types.yaml:YAMLFile"
 csv = "yaml_to_disk.file_types.csv:CSVFile"
 
 [project.entry-points.pytest11]
-yaml_to_dict = "yaml_to_dict.pytest_plugin"
+yaml_to_disk = "yaml_to_disk.pytest_plugin"
 
 [tool.pytest.ini_options]
 addopts = [
