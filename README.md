@@ -28,7 +28,7 @@ E.g.,
 >>> from yaml_to_disk import yaml_disk
 >>> target_contents = '''
 ... dir1:
-...   sub1.txt/:
+...   "sub1.txt/":
 ...     file1.txt: "Hello, World!"
 ...   sub2:
 ...     cfg.yaml: {"foo": "bar"}

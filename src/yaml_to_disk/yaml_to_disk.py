@@ -180,16 +180,18 @@ class YamlDisk:
                 case str() as file_name:
                     parsed_contents.append(File(rel_path=Path(file_name), contents=None))
                 case dict() if len(item) == 1 and isinstance(next(iter(item.keys())), str):
-                    name = next(iter(item.keys()))
-                    contents = item[name]
+                    raw_name = next(iter(item.keys()))
+                    contents = item[raw_name]
 
-                    name = Path(name)
+                    name = Path(raw_name)
 
-                    if name.suffix != "/" and name.suffix:
-                        parsed_contents.append(File(rel_path=name, contents=contents))
-                    else:
+                    is_dir_name = raw_name.endswith("/") or name.suffix == ""
+
+                    if is_dir_name:
                         nested_contents = cls._parse_yaml_contents(contents)
                         parsed_contents.append(Directory(rel_path=name, contents=nested_contents))
+                    else:
+                        parsed_contents.append(File(rel_path=name, contents=contents))
 
                 case dict():
                     raise ValueError(f"Invalid format: {item}. Expected a single key (str) - value pair.")
