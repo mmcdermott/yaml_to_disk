@@ -28,7 +28,7 @@ E.g.,
 >>> from yaml_to_disk import yaml_disk
 >>> target_contents = '''
 ... dir1:
-...   sub1:
+...   sub1.txt/:
 ...     file1.txt: "Hello, World!"
 ...   sub2:
 ...     cfg.yaml: {"foo": "bar"}
@@ -43,7 +43,7 @@ E.g.,
 >>> with yaml_disk(target_contents) as root_path:
 ...     print_directory(root_path)
 ...     print("---------------------")
-...     print(f"file1.txt contents: {(root_path / 'dir1' / 'sub1' / 'file1.txt').read_text()}")
+...     print(f"file1.txt contents: {(root_path / 'dir1' / 'sub1.txt' / 'file1.txt').read_text()}")
 ...     print(f"a.json contents: {(root_path / 'a.json').read_text()}")
 ...     print("cfg.yaml contents:")
 ...     print((root_path / 'dir1' / 'sub2' / 'cfg.yaml').read_text().strip())
@@ -51,7 +51,7 @@ E.g.,
 ...     print((root_path / 'dir1' / 'sub2' / 'data.csv').read_text().strip())
 ├── a.json
 └── dir1
-    ├── sub1
+    ├── sub1.txt
     │   └── file1.txt
     └── sub2
         ├── cfg.yaml
@@ -78,7 +78,7 @@ You can also pass a filepath that contains the target yaml on disk, or a parsed 
 ...         print_directory(root_path)
 ├── a.json
 └── dir1
-    ├── sub1
+    ├── sub1.txt
     │   └── file1.txt
     └── sub2
         ├── cfg.yaml
