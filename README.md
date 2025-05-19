@@ -152,3 +152,39 @@ csv = "yaml_to_disk.file_types.csv:CSVFile"
 Then, the system will automatically know how to match and use your new file type. Note that you cannot
 overwrite existing file extensions in this way; instead, if an overwrite is attempted, upon the load of all
 registered file types, an error will be raised.
+
+Note that you can set all non-recognized extensions with string values to be treadted as `.txt` files via the
+class variable `YamlDisk._USE_TXT_ON_UNK_STR_FILES`, which is `True` by default or by passing the keyword
+argument `use_txt_on_unk_str_files` to the `yaml_disk` function. For example:
+
+```python
+>>> unk_file_contents_str = '''
+... file1.txt: "Hello, World!"
+... file2.md: "# Hello, World!"
+... '''
+>>> with yaml_disk(unk_file_contents_str) as root_path:
+...     print_directory(root_path)
+...     print("---------------------")
+...     print(f"file1.txt contents: {(root_path / 'file1.txt').read_text()}")
+...     print(f"file2.md contents: {(root_path / 'file2.md').read_text()}")
+├── file1.txt
+└── file2.md
+---------------------
+file1.txt contents: Hello, World!
+file2.md contents: # Hello, World!
+>>> with yaml_disk(unk_file_contents_str, use_txt_on_unk_str_files=False) as root_path:
+...     pass # An error will be thrown
+Traceback (most recent call last):
+  ...
+ValueError: No file type found for .md
+>>> unk_file_contents_not_str = '''
+... file1.txt: "Hello, World!"
+... file2.tsv: [["a", "b", "c"], ["1", "2", "3"]]
+... '''
+>>> with yaml_disk(unk_file_contents_not_str, use_txt_on_unk_str_files=True) as root_path:
+...     pass # An error will be thrown as the contents aren't string
+Traceback (most recent call last):
+  ...
+ValueError: No file type found for .tsv
+
+```

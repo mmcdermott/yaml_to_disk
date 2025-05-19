@@ -26,7 +26,12 @@ class File:
     rel_path: Path
     contents: Any
 
-    def write(self, root_dir: Path, do_overwrite: bool = False):
+    def write(
+        self,
+        root_dir: Path,
+        do_overwrite: bool = False,
+        use_txt_on_unk_str_files: bool = True,
+    ):
         """Write the file to the specified directory."""
 
         file_path = root_dir / self.rel_path
@@ -44,7 +49,13 @@ class File:
             file_path.touch()
             return
 
-        file_type = FILE_TYPE_MATCHER(self.rel_path)
+        try:
+            file_type = FILE_TYPE_MATCHER(self.rel_path)
+        except ValueError:
+            if isinstance(self.contents, str) and use_txt_on_unk_str_files:
+                file_type = FILE_TYPE_MATCHER(".txt")
+            else:
+                raise
 
         try:
             file_type.validate(self.contents)
@@ -82,6 +93,7 @@ class YamlDisk:
 
     _temp_dir: tempfile.TemporaryDirectory | None
     _FILENAME_REGEX: ClassVar[re.Pattern] = re.compile(r".*\.(yaml|yml)$")
+    _USE_TXT_ON_UNK_STR_FILES: ClassVar[bool] = True
 
     def __init__(self):
         self._temp_dir = None
@@ -214,6 +226,10 @@ class YamlDisk:
         **kwargs,
     ):
         base = Directory(rel_path=Path(), contents=parsed_contents)
+
+        if "use_txt_on_unk_str_files" not in kwargs:
+            kwargs["use_txt_on_unk_str_files"] = cls._USE_TXT_ON_UNK_STR_FILES
+
         base.write(root_dir, do_overwrite=do_overwrite, **kwargs)
 
 
