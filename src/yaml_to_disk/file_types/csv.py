@@ -3,6 +3,7 @@ import io
 from pathlib import Path
 from typing import Any, ClassVar
 
+from ..tabular_utils import validate_column_map, validate_row_map_list
 from .base import FileType
 
 
@@ -207,20 +208,7 @@ class CSVFile(FileType):
     def _parse_dict(cls, contents: dict[str, list[Any]]) -> str:
         """Parses a dictionary of column names to column values into a CSV string."""
 
-        bad_keys = [f"{k} ({type(k).__name__})" for k in contents if not isinstance(k, str)]
-        if bad_keys:
-            raise ValueError(f"Column-maps must have all string keys; got {', '.join(bad_keys)}")
-
-        bad_keys = [f"{k} ({type(v).__name__})" for k, v in contents.items() if not isinstance(v, list)]
-        if bad_keys:
-            raise ValueError(f"Column-maps must have all list values; got cols {', '.join(bad_keys)}")
-
-        N = len(next(iter(contents.values())))
-        bad_keys = [f"{k} ({len(v)})" for k, v in contents.items() if len(v) != N]
-        if bad_keys:
-            bad_keys_str = ", ".join(bad_keys)
-            raise ValueError(f"Column-maps must have all lists of the same length {N}; got {bad_keys_str}")
-
+        validate_column_map(contents)
         fieldnames = list(contents.keys())
         rows = [dict(zip(fieldnames, row, strict=False)) for row in zip(*contents.values(), strict=False)]
         return cls.__dict_rows_to_str(fieldnames, rows)
@@ -229,30 +217,7 @@ class CSVFile(FileType):
     def _parse_list_rows(cls, contents: list[dict[str, Any]]) -> str:
         """Parses a list of rows (as dictionaries) into a CSV string."""
 
-        bad_keys = [k for k in contents[0] if not isinstance(k, str)]
-        if bad_keys:
-            raise ValueError(f"Column-maps must have all string keys; got {bad_keys}")
-
-        fieldnames = list(contents[0].keys())
-
-        bad_rows = []
-        for i, row in enumerate(contents):
-            missing_keys = set(fieldnames) - set(row.keys())
-            extra_keys = set(row.keys()) - set(fieldnames)
-
-            err_parts = []
-            if extra_keys:
-                err_parts.append(f"extra keys {sorted(extra_keys)}")
-            if missing_keys:
-                err_parts.append(f"missing keys {sorted(missing_keys)}")
-
-            if err_parts:
-                bad_rows.append(f"Row {i} has {', '.join(err_parts)}")
-
-        if bad_rows:
-            bad_rows_str = "\n".join(bad_rows)
-            raise ValueError(f"Row-maps must be consistent; got\n{bad_rows_str}")
-
+        fieldnames = validate_row_map_list(contents)
         return cls.__dict_rows_to_str(fieldnames, contents)
 
     @classmethod
