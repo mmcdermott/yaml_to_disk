@@ -199,12 +199,12 @@ Traceback (most recent call last):
 ValueError: No file type found for .md
 >>> unk_file_contents_not_str = '''
 ... file1.txt: "Hello, World!"
-... file2.tsv: [["a", "b", "c"], ["1", "2", "3"]]
+... file2.pdf: [["a", "b", "c"], ["1", "2", "3"]]
 ... '''
 >>> with yaml_disk(unk_file_contents_not_str, use_txt_on_unk_str_files=True) as root_path:
 ...     pass # An error will be thrown as the contents aren't string
 Traceback (most recent call last):
   ...
-ValueError: No file type found for .tsv
+ValueError: No file type found for .pdf
 
 ```

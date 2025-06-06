@@ -19,26 +19,29 @@ if TYPE_CHECKING:  # pragma: no cover - for type hints
 class ParquetFile(FileType):
     """A class for validating and writing Parquet files.
 
-    Examples:
-        >>> col_map = {'a': [1, 2], 'b': [3, 4]}  # doctest: +SKIP
-        >>> with tempfile.NamedTemporaryFile() as tmp_file:  # doctest: +SKIP
-        ...     fp = Path(tmp_file.name)
-        ...     ParquetFile.write(fp, col_map)
-        ...     pq.read_table(fp).to_pydict()
-        {'a': [1, 2], 'b': [3, 4]}
+                        Examples
+                        --------
+    >>> import pytest
+    >>> _ = pytest.importorskip("pyarrow")
+    >>> col_map = {'a': [1, 2], 'b': [3, 4]}
+    >>> with tempfile.NamedTemporaryFile() as tmp_file:
+    ...     fp = Path(tmp_file.name)
+    ...     ParquetFile.write(fp, col_map)
+    ...     pq.read_table(fp).to_pydict()
+    {'a': [1, 2], 'b': [3, 4]}
 
     You can also pass an existing :class:`~pyarrow.Table` directly:
 
-        >>> table = pa.table(col_map)  # doctest: +SKIP
-        >>> ParquetFile.validate(table)  # doctest: +SKIP
+    >>> table = pa.table(col_map)
+    >>> ParquetFile.validate(table)
 
     Invalid inputs raise a ``ValueError``:
 
-        >>> bad = {'a': [1, 2], 'b': [3]}  # doctest: +SKIP
-        >>> ParquetFile.validate(bad)  # doctest: +SKIP
-        Traceback (most recent call last):
-        ...
-        ValueError: Column-maps must have all lists of the same length 2; got b (1)
+    >>> bad = {'a': [1, 2], 'b': [3]}
+    >>> ParquetFile.validate(bad)
+    Traceback (most recent call last):
+    ...
+    ValueError: Column-maps must have all lists of the same length 2; got b (1)
     """
 
     extension: ClassVar[str] = ".parquet"

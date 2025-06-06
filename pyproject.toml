@@ -22,7 +22,12 @@ dependencies = ["pyyaml", "pytest"]
 
 [project.optional-dependencies]
 dev = ["pre-commit<4", "ruff"]
-tests = ["pytest-cov", "pretty-print-directory", "tomli-w"]
+tests = [
+  "pytest-cov",
+  "pretty-print-directory",
+  "tomli-w",
+  "pytest-doctestplus",
+]
 parquet = ["pyarrow"]
 toml = ["tomli-w"]
 
@@ -59,8 +64,10 @@ addopts = [
   "--doctest-modules",
   "--ignore=docs",
   "--doctest-glob=*.md",
+  "--doctest-plus",
 ]
 doctest_optionflags = ["NORMALIZE_WHITESPACE", "ELLIPSIS"]
+doctest_plus = true
 
 [tool.ruff]
 target-version = "py310"

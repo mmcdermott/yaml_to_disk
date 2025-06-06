@@ -12,20 +12,23 @@ from .base import FileType
 class TOMLFile(FileType):
     """A class for validating and writing TOML files.
 
-    Examples:
-        >>> with tempfile.NamedTemporaryFile() as tmp_file:  # doctest: +SKIP
-        ...     fp = Path(tmp_file.name)
-        ...     TOMLFile.validate({"key": "value"})  # doctest: +SKIP
-        ...     TOMLFile.write(fp, {"key": "value"})  # doctest: +SKIP
-        ...     fp.read_text().strip()  # doctest: +SKIP
-        'key = "value"'
+                            Examples
+                            --------
+    >>> import pytest
+    >>> _ = pytest.importorskip("tomli_w")
+    >>> with tempfile.NamedTemporaryFile() as tmp_file:
+    ...     fp = Path(tmp_file.name)
+    ...     TOMLFile.validate({"key": "value"})
+    ...     TOMLFile.write(fp, {"key": "value"})
+    ...     fp.read_text().strip()
+                    'key = "value"'
 
-    Invalid inputs raise an ``AttributeError``:
+                            Invalid inputs raise an ``AttributeError``:
 
-        >>> TOMLFile.validate({1, 2})  # doctest: +SKIP
-        Traceback (most recent call last):
-        ...
-        AttributeError: 'set' object has no attribute 'items'
+                                >>> TOMLFile.validate({1, 2})
+                                Traceback (most recent call last):
+                                ...
+                                AttributeError: 'set' object has no attribute 'items'
     """
 
     extension: ClassVar[str] = ".toml"
