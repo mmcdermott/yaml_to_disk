@@ -8,27 +8,28 @@ except Exception:  # pragma: no cover - tomli_w is optional
 
 from .base import FileType
 
+__doctest_requires__ = {"TOMLFile.*": ["tomli_w"]}
+
 
 class TOMLFile(FileType):
-    """A class for validating and writing TOML files.
+    """Validate and write TOML files.
 
-                            Examples
-                            --------
-    >>> import pytest
-    >>> _ = pytest.importorskip("tomli_w")
-    >>> with tempfile.NamedTemporaryFile() as tmp_file:
-    ...     fp = Path(tmp_file.name)
-    ...     TOMLFile.validate({"key": "value"})
-    ...     TOMLFile.write(fp, {"key": "value"})
-    ...     fp.read_text().strip()
-                    'key = "value"'
+    Examples:
+        >>> import pytest
+        >>> _ = pytest.importorskip("tomli_w")
+        >>> with tempfile.NamedTemporaryFile() as tmp_file:
+        ...     fp = Path(tmp_file.name)
+        ...     TOMLFile.validate({"key": "value"})
+        ...     TOMLFile.write(fp, {"key": "value"})
+        ...     fp.read_text().strip()
+        'key = "value"'
 
-                            Invalid inputs raise an ``AttributeError``:
+        Invalid inputs raise ``AttributeError``:
 
-                                >>> TOMLFile.validate({1, 2})
-                                Traceback (most recent call last):
-                                ...
-                                AttributeError: 'set' object has no attribute 'items'
+        >>> TOMLFile.validate({1, 2})
+        Traceback (most recent call last):
+        ...
+        AttributeError: 'set' object has no attribute 'items'
     """
 
     extension: ClassVar[str] = ".toml"

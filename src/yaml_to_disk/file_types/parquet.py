@@ -12,36 +12,37 @@ except Exception:  # pragma: no cover - pyarrow is optional
 from ..tabular_utils import validate_column_map, validate_row_map_list
 from .base import FileType
 
+__doctest_requires__ = {"ParquetFile.*": ["pyarrow"]}
+
 if TYPE_CHECKING:  # pragma: no cover - for type hints
     from pathlib import Path
 
 
 class ParquetFile(FileType):
-    """A class for validating and writing Parquet files.
+    """Validate and write Parquet files.
 
-                        Examples
-                        --------
-    >>> import pytest
-    >>> _ = pytest.importorskip("pyarrow")
-    >>> col_map = {'a': [1, 2], 'b': [3, 4]}
-    >>> with tempfile.NamedTemporaryFile() as tmp_file:
-    ...     fp = Path(tmp_file.name)
-    ...     ParquetFile.write(fp, col_map)
-    ...     pq.read_table(fp).to_pydict()
-    {'a': [1, 2], 'b': [3, 4]}
+    Examples:
+        >>> import pytest
+        >>> _ = pytest.importorskip("pyarrow")
+        >>> col_map = {"a": [1, 2], "b": [3, 4]}
+        >>> with tempfile.NamedTemporaryFile() as tmp_file:
+        ...     fp = Path(tmp_file.name)
+        ...     ParquetFile.write(fp, col_map)
+        ...     pq.read_table(fp).to_pydict()
+        {'a': [1, 2], 'b': [3, 4]}
 
-    You can also pass an existing :class:`~pyarrow.Table` directly:
+        You can also pass an existing :class:`pyarrow.Table` directly:
 
-    >>> table = pa.table(col_map)
-    >>> ParquetFile.validate(table)
+        >>> table = pa.table(col_map)
+        >>> ParquetFile.validate(table)
 
-    Invalid inputs raise a ``ValueError``:
+        Invalid inputs raise ``ValueError``:
 
-    >>> bad = {'a': [1, 2], 'b': [3]}
-    >>> ParquetFile.validate(bad)
-    Traceback (most recent call last):
-    ...
-    ValueError: Column-maps must have all lists of the same length 2; got b (1)
+        >>> bad = {"a": [1, 2], "b": [3]}
+        >>> ParquetFile.validate(bad)
+        Traceback (most recent call last):
+        ...
+        ValueError: Column-maps must have all lists of the same length 2; got b (1)
     """
 
     extension: ClassVar[str] = ".parquet"
