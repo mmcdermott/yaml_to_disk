@@ -12,7 +12,7 @@ except ImportError:
 
 
 class YAMLFile(FileType):
-    """A class for validating and writing JSON files.
+    """A class for validating and writing YAML files.
 
     Examples:
         >>> with tempfile.NamedTemporaryFile() as tmp_file:
