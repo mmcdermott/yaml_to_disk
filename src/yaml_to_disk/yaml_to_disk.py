@@ -7,14 +7,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, ClassVar
 
-from yaml import load
+from yaml import safe_load
 
 from .file_matchers import FILE_TYPE_MATCHER
-
-try:
-    from yaml import CLoader as Loader
-except ImportError:
-    from yaml import Loader
 
 logger = logging.getLogger(__name__)
 
@@ -152,13 +147,7 @@ class YamlDisk:
 
         if not yaml_fp.is_file():
             raise FileNotFoundError(f"File not found: {yaml_fp}")
-        return cls._read_yaml_str(yaml_fp.read_text())
-
-    @classmethod
-    def _read_yaml_str(cls, yaml_str: str) -> dict | list:
-        """Load a YAML string and return its contents."""
-
-        return load(yaml_str, Loader=Loader)
+        return safe_load(yaml_fp.read_text())
 
     @classmethod
     def _parse_yaml_contents(cls, yaml_contents: dict | list) -> list[File | Directory]:
@@ -209,7 +198,7 @@ class YamlDisk:
             case Path() as yaml_fp:
                 yaml_contents = cls._read_yaml_file(yaml_fp)
             case str() as yaml_str:
-                yaml_contents = cls._read_yaml_str(yaml_str)
+                yaml_contents = safe_load(yaml_str)
             case dict() | list():
                 yaml_contents = disk_contents
             case _:
