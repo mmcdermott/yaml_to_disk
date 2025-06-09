@@ -22,7 +22,7 @@ class FileType(abc.ABC):
             True if the file path matches the expected file type, False otherwise.
         """
 
-        matching_extensions = cls.extension if isinstance(cls.extension, set) else {cls.extension}
+        matching_extensions = cls.extension if isinstance(cls.extension, set | frozenset) else {cls.extension}
         return any("".join(file_path.suffixes) == ext for ext in matching_extensions)
 
     @classmethod

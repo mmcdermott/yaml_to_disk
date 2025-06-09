@@ -29,6 +29,15 @@ class YAMLFile(FileType):
         >>> YAMLFile.validate([1, 2, 3])
         >>> YAMLFile.validate({1, 2, 3})
         >>> YAMLFile.validate(lambda x: x)
+
+    ``matches`` inspects the file suffix and accepts either ``.yaml`` or ``.yml``:
+
+        >>> YAMLFile.matches(Path("foo.yaml"))
+        True
+        >>> YAMLFile.matches(Path("foo.yml"))
+        True
+        >>> YAMLFile.matches(Path("foo.txt"))
+        False
     """
 
     extension: ClassVar[frozenset[str]] = frozenset({".yaml", ".yml"})
