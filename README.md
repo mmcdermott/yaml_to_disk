@@ -19,6 +19,20 @@ critical.
 pip install yaml_to_disk
 ```
 
+If you plan on using the Parquet functionality, install the optional
+`pyarrow` dependency with:
+
+```bash
+pip install "yaml_to_disk[parquet]"
+```
+
+If you want to work with TOML files, install the optional `tomli-w`
+dependency:
+
+```bash
+pip install "yaml_to_disk[toml]"
+```
+
 ## 2. Usage
 
 To use, you simply define a yaml representation of the files you want to populate, then call the function.
@@ -130,6 +144,9 @@ DIR_NAME:
 | `yaml`,`yml` | YAML file       | Any YAML compatible object                                      | Written via `yaml.dump`                            |
 | `pkl`        | Pickle file     | Any pickle serializable                                         | Written via `pickle.dump`                          |
 | `csv`        | CSV file        | CSV data in either string, column-map, or a list of rows format | See [`CSVFile`](src/file_types/csv.py) for details |
+| `tsv`        | TSV file        | TSV data in same formats as CSV                                 | See [`TSVFile`](src/file_types/tsv.py) for details |
+| `parquet`    | Parquet file    | `pyarrow.Table`, column-map, or list of row maps                | Written via `pyarrow.parquet.write_table`          |
+| `toml`       | TOML file       | Any TOML compatible object                                      | Written via `tomli_w.dumps`                        |
 
 Other extensions can be used, but only in the empty files mode.
 
@@ -147,6 +164,9 @@ json = "yaml_to_disk.file_types.json:JSONFile"
 pkl = "yaml_to_disk.file_types.pkl:PickleFile"
 yaml = "yaml_to_disk.file_types.yaml:YAMLFile"
 csv = "yaml_to_disk.file_types.csv:CSVFile"
+tsv = "yaml_to_disk.file_types.tsv:TSVFile"
+parquet = "yaml_to_disk.file_types.parquet:ParquetFile"
+toml = "yaml_to_disk.file_types.toml:TOMLFile"
 ```
 
 Then, the system will automatically know how to match and use your new file type. Note that you cannot
@@ -179,12 +199,12 @@ Traceback (most recent call last):
 ValueError: No file type found for .md
 >>> unk_file_contents_not_str = '''
 ... file1.txt: "Hello, World!"
-... file2.tsv: [["a", "b", "c"], ["1", "2", "3"]]
+... file2.pdf: [["a", "b", "c"], ["1", "2", "3"]]
 ... '''
 >>> with yaml_disk(unk_file_contents_not_str, use_txt_on_unk_str_files=True) as root_path:
 ...     pass # An error will be thrown as the contents aren't string
 Traceback (most recent call last):
   ...
-ValueError: No file type found for .tsv
+ValueError: No file type found for .pdf
 
 ```
