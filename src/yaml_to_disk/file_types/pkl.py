@@ -6,7 +6,7 @@ from .base import FileType
 
 
 class PickleFile(FileType):
-    """A class for validating and writing JSON files.
+    """A class for validating and writing Pickle files.
 
     Examples:
         >>> with tempfile.NamedTemporaryFile() as tmp_file:
