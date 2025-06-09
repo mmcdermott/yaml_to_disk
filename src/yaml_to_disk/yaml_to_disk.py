@@ -149,7 +149,6 @@ class YamlDisk:
             raise FileNotFoundError(f"File not found: {yaml_fp}")
         return safe_load(yaml_fp.read_text())
 
-
     @classmethod
     def _parse_yaml_contents(cls, yaml_contents: dict | list) -> list[File | Directory]:
         """Parse the YAML contents and return a list of File or Directory objects."""
