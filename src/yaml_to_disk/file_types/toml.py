@@ -1,22 +1,31 @@
 from pathlib import Path
 from typing import Any, ClassVar
 
-try:
-    import tomli_w
-except Exception:  # pragma: no cover - tomli_w is optional
-    tomli_w = None
-
 from .base import FileType
 
-__doctest_requires__ = {"TOMLFile.*": ["tomli_w"]}
+tomli_w = None
+
+
+def _load_tomli_w():
+    """Lazily import ``tomli_w`` and cache the module."""
+    global tomli_w
+    if tomli_w is None:  # pragma: no cover - optional dependency
+        try:
+            import tomli_w as _tomli_w
+        except Exception as e:  # pragma: no cover - optional dependency
+            raise ImportError("tomli-w is required to use TOMLFile") from e
+
+        tomli_w = _tomli_w
+    return tomli_w
+
+
+__doctest_requires__ = {"TOMLFile": ["tomli_w"]}
 
 
 class TOMLFile(FileType):
     """Validate and write TOML files.
 
     Examples:
-        >>> import pytest
-        >>> _ = pytest.importorskip("tomli_w")
         >>> with tempfile.NamedTemporaryFile() as tmp_file:
         ...     fp = Path(tmp_file.name)
         ...     TOMLFile.validate({"key": "value"})
@@ -36,12 +45,10 @@ class TOMLFile(FileType):
 
     @classmethod
     def validate(cls, contents: Any):
-        if tomli_w is None:
-            raise ImportError("tomli-w is required to use TOMLFile")
-        tomli_w.dumps(contents)
+        toml_mod = _load_tomli_w()
+        toml_mod.dumps(contents)
 
     @classmethod
     def write(cls, file_path: Path, contents: Any) -> None:
-        if tomli_w is None:
-            raise ImportError("tomli-w is required to use TOMLFile")
-        file_path.write_text(tomli_w.dumps(contents))
+        toml_mod = _load_tomli_w()
+        file_path.write_text(toml_mod.dumps(contents))
