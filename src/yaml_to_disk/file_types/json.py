@@ -25,6 +25,13 @@ class JSONFile(FileType):
         Traceback (most recent call last):
             ...
         TypeError: Object of type set is not JSON serializable
+
+    ``JSONFile.matches`` can detect ``.json`` file names:
+
+        >>> JSONFile.matches(Path('foo.json'))
+        True
+        >>> JSONFile.matches(Path('foo.txt'))
+        False
     """
 
     extension: ClassVar[str] = ".json"

@@ -18,6 +18,14 @@ class TSVFile(CSVFile):
         Name\tAge
         Alice\t30
         Bob\t25
+
+    ``TSVFile.matches`` can detect ``.tsv`` file names:
+
+        >>> from pathlib import Path
+        >>> TSVFile.matches(Path('foo.tsv'))
+        True
+        >>> TSVFile.matches(Path('foo.txt'))
+        False
     """
 
     extension: ClassVar[str] = ".tsv"
