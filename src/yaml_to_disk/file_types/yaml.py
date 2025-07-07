@@ -38,7 +38,6 @@ class YAMLFile(FileType):
         True
         >>> YAMLFile.matches(Path("foo.txt"))
         False
-
     """
 
     extension: ClassVar[frozenset[str]] = frozenset({".yaml", ".yml"})
