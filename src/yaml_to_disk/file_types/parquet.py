@@ -55,6 +55,13 @@ class ParquetFile(FileType):
         Traceback (most recent call last):
         ...
         ValueError: Column-maps must have all lists of the same length 2; got b (1)
+
+    ``ParquetFile.matches`` can detect ``.parquet`` file names:
+
+        >>> ParquetFile.matches(Path('foo.parquet'))
+        True
+        >>> ParquetFile.matches(Path('foo.txt'))
+        False
     """
 
     extension: ClassVar[str] = ".parquet"

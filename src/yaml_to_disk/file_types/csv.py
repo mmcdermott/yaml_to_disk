@@ -163,6 +163,13 @@ class CSVFile(FileType):
         Traceback (most recent call last):
             ...
         TypeError: Contents must be a string, dict, or list; got <class 'int'>
+
+    ``CSVFile.matches`` can detect ``.csv`` file names:
+
+        >>> CSVFile.matches(Path('foo.csv'))
+        True
+        >>> CSVFile.matches(Path('foo.txt'))
+        False
     """
 
     extension: ClassVar[str] = ".csv"

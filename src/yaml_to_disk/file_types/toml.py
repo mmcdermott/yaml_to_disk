@@ -39,6 +39,13 @@ class TOMLFile(FileType):
         Traceback (most recent call last):
         ...
         AttributeError: 'set' object has no attribute 'items'
+
+    ``TOMLFile.matches`` can detect ``.toml`` file names:
+
+        >>> TOMLFile.matches(Path('foo.toml'))
+        True
+        >>> TOMLFile.matches(Path('foo.txt'))
+        False
     """
 
     extension: ClassVar[str] = ".toml"

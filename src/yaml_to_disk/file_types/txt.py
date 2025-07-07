@@ -21,6 +21,13 @@ class TextFile(FileType):
         Traceback (most recent call last):
             ...
         ValueError: Contents must be a string; got <class 'int'>
+
+    ``TextFile.matches`` can detect ``.txt`` file names:
+
+        >>> TextFile.matches(Path('foo.txt'))
+        True
+        >>> TextFile.matches(Path('foo.json'))
+        False
     """
 
     extension: ClassVar[str] = ".txt"

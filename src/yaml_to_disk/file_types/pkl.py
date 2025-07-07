@@ -27,6 +27,13 @@ class PickleFile(FileType):
         Traceback (most recent call last):
             ...
         _pickle.PicklingError: Can't pickle <function <lambda> at ...>: ...
+
+    ``PickleFile.matches`` can detect ``.pkl`` file names:
+
+        >>> PickleFile.matches(Path('foo.pkl'))
+        True
+        >>> PickleFile.matches(Path('foo.txt'))
+        False
     """
 
     extension: ClassVar[str] = ".pkl"
