@@ -8,7 +8,7 @@ class FileType(abc.ABC):
 
     extension: ClassVar[str | frozenset[str] | None] = None
 
-    def __init__(self):
+    def __init__(self):  # pragma: no cover - defensive guard
         raise TypeError(f"{self.__class__.__name__} should not be instantiated")
 
     @classmethod
@@ -36,7 +36,7 @@ class FileType(abc.ABC):
         Raises:
             Exception: If the contents are invalid.
         """
-        pass
+        pass  # pragma: no cover - abstract
 
     @classmethod
     @abc.abstractmethod
@@ -47,4 +47,4 @@ class FileType(abc.ABC):
             file_path: Path to the file.
             contents: Content to write to the file.
         """
-        pass
+        pass  # pragma: no cover - abstract

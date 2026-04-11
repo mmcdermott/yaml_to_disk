@@ -7,6 +7,10 @@ def test_validate_column_map_valid():
     validate_column_map({"a": [1, 2], "b": [3, 4]})
 
 
+def test_validate_column_map_empty():
+    validate_column_map({})
+
+
 def test_validate_column_map_bad_key():
     with pytest.raises(ValueError):
         validate_column_map({1: [1, 2]})
@@ -25,6 +29,10 @@ def test_validate_column_map_bad_length():
 def test_validate_row_map_list_valid():
     rows = [{"a": 1, "b": 2}, {"a": 3, "b": 4}]
     assert validate_row_map_list(rows) == ["a", "b"]
+
+
+def test_validate_row_map_list_empty():
+    assert validate_row_map_list([]) == []
 
 
 def test_validate_row_map_list_inconsistent():
