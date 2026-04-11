@@ -8,7 +8,7 @@ dynamic = ["version"]
 authors = [
   { name="Matthew McDermott", email="mattmcdermott8@gmail.com" },
 ]
-description = "A simple utility to pretty-print a directory tree, suitable for use in pytest test cases."
+description = "A simple utility to define directory structures in YAML and populate them on disk in a single command."
 readme = "README.md"
 requires-python = ">=3.10"
 classifiers = [
