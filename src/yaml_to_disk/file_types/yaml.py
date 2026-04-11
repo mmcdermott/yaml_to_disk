@@ -7,7 +7,7 @@ from .base import FileType
 
 try:
     from yaml import CDumper as Dumper
-except ImportError:  # pragma: no cover - C extension may not be available
+except ImportError:
     from yaml import Dumper
 
 

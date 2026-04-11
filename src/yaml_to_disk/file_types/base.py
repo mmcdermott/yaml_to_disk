@@ -8,7 +8,7 @@ class FileType(abc.ABC):
 
     extension: ClassVar[str | frozenset[str] | None] = None
 
-    def __init__(self):  # pragma: no cover - defensive guard
+    def __init__(self):
         raise TypeError(f"{self.__class__.__name__} should not be instantiated")
 
     @classmethod

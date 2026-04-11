@@ -12,11 +12,11 @@ pq = None
 def _load_pyarrow():
     """Lazily import ``pyarrow`` and cache the modules."""
     global pa, pq
-    if pa is None or pq is None:  # pragma: no cover - optional dependency
+    if pa is None or pq is None:
         try:
             import pyarrow as _pa
             import pyarrow.parquet as _pq
-        except Exception as e:  # pragma: no cover - optional dependency
+        except Exception as e:
             raise ImportError("pyarrow is required to use ParquetFile") from e
 
         pa = _pa

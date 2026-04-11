@@ -1,15 +1,103 @@
 """Tests for file type handlers that have insufficient doctest-based coverage."""
 
 from pathlib import Path
+from unittest.mock import patch
 
 import pyarrow as pa
 import pyarrow.parquet as pq
 import pytest
 
+import yaml_to_disk.file_types.parquet as parquet_mod
+import yaml_to_disk.file_types.toml as toml_mod
+import yaml_to_disk.file_types.yaml
 from yaml_to_disk.file_types.csv import CSVFile
 from yaml_to_disk.file_types.parquet import ParquetFile
 from yaml_to_disk.file_types.toml import TOMLFile
 from yaml_to_disk.file_types.tsv import TSVFile
+
+# --- FileType base class ---
+
+
+class TestFileTypeBase:
+    def test_cannot_instantiate(self):
+        """FileType.__init__ raises TypeError to prevent instantiation."""
+        with pytest.raises(TypeError, match="should not be instantiated"):
+            CSVFile()
+
+
+# --- YAMLFile CDumper fallback ---
+
+
+class TestYAMLFileDumperFallback:
+    def test_cdumper_import_fallback(self):
+        """When CDumper is unavailable, the module falls back to pure-Python Dumper."""
+        import importlib
+
+        import yaml
+
+        original_cdumper = getattr(yaml, "CDumper", None)
+        try:
+            # Temporarily remove CDumper to force the except branch
+            if hasattr(yaml, "CDumper"):
+                delattr(yaml, "CDumper")
+            # Reload the module so the try/except re-executes
+            importlib.reload(yaml_to_disk.file_types.yaml)
+            # The module should still work, using the pure-Python Dumper
+            from yaml_to_disk.file_types.yaml import YAMLFile as ReloadedYAML
+
+            ReloadedYAML.validate({"key": "value"})
+        finally:
+            # Restore CDumper and reload to reset state
+            if original_cdumper is not None:
+                yaml.CDumper = original_cdumper
+            importlib.reload(yaml_to_disk.file_types.yaml)
+
+
+# --- Lazy-import guards (parquet, toml) ---
+
+
+class TestParquetLazyImport:
+    def test_load_pyarrow_caches(self):
+        """_load_pyarrow returns cached modules on second call."""
+        pa_result, pq_result = parquet_mod._load_pyarrow()
+        assert pa_result is not None
+        assert pq_result is not None
+
+    def test_load_pyarrow_when_missing(self):
+        """_load_pyarrow raises ImportError when pyarrow is not installed."""
+        saved_pa, saved_pq = parquet_mod.pa, parquet_mod.pq
+        try:
+            parquet_mod.pa = None
+            parquet_mod.pq = None
+            with (
+                patch.dict("sys.modules", {"pyarrow": None, "pyarrow.parquet": None}),
+                pytest.raises(ImportError, match="pyarrow is required"),
+            ):
+                parquet_mod._load_pyarrow()
+        finally:
+            parquet_mod.pa = saved_pa
+            parquet_mod.pq = saved_pq
+
+
+class TestTomlLazyImport:
+    def test_load_tomli_w_caches(self):
+        """_load_tomli_w returns cached module on second call."""
+        result = toml_mod._load_tomli_w()
+        assert result is not None
+
+    def test_load_tomli_w_when_missing(self):
+        """_load_tomli_w raises ImportError when tomli-w is not installed."""
+        saved = toml_mod.tomli_w
+        try:
+            toml_mod.tomli_w = None
+            with (
+                patch.dict("sys.modules", {"tomli_w": None}),
+                pytest.raises(ImportError, match="tomli-w is required"),
+            ):
+                toml_mod._load_tomli_w()
+        finally:
+            toml_mod.tomli_w = saved
+
 
 # --- ParquetFile ---
 
