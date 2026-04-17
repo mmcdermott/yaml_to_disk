@@ -35,7 +35,7 @@ jobs:
       #----------------------------------------------
       - name: Run tests without optional deps
         run: |
-          pytest -v --cov=src
+          pytest -v --cov=yaml_to_disk
 
       - name: Install optional dependencies
         run: |
@@ -43,7 +43,7 @@ jobs:
 
       - name: Run tests with optional deps
         run: |
-          pytest -v --cov=src --cov-append --cov-report=xml
+          pytest -v --cov=yaml_to_disk --cov-append --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
