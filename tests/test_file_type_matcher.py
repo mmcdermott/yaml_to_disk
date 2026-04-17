@@ -1,35 +1,17 @@
-from pathlib import Path
+"""Unit tests for FileTypeMatcher paths that require mocking ``entry_points``.
+
+Simpler behavior (known/unknown extensions, Path resolution, type checks) is covered by the
+doctests on :class:`yaml_to_disk.file_matchers.FileTypeMatcher`.
+"""
+
 from unittest.mock import MagicMock, patch
 
 import pytest
 
 import yaml_to_disk.file_matchers as _fm  # Use the FileType that file_matchers actually references
-from yaml_to_disk.file_matchers import FILE_TYPE_MATCHER, FileTypeMatcher
-from yaml_to_disk.file_types.csv import CSVFile
-from yaml_to_disk.file_types.json import JSONFile
+from yaml_to_disk.file_matchers import FileTypeMatcher
 
 _FileType = _fm.FileType
-
-
-def test_file_type_matcher_known_extensions():
-    assert FILE_TYPE_MATCHER(".json").__name__ == JSONFile.__name__
-    assert FILE_TYPE_MATCHER(Path("foo.csv")).__name__ == CSVFile.__name__
-
-
-def test_file_type_matcher_unknown_extension():
-    with pytest.raises(ValueError):
-        FILE_TYPE_MATCHER(".unknown")
-
-
-def test_file_type_matcher_invalid_key_type():
-    with pytest.raises(TypeError, match="Key must be a string or Path"):
-        FILE_TYPE_MATCHER(123)
-
-
-def test_file_type_matcher_suffix_match_via_matches():
-    """Test that a file with a non-direct suffix match still resolves via .matches()."""
-    result = FILE_TYPE_MATCHER(Path("foo.yml"))
-    assert result.__name__ == "YAMLFile"
 
 
 def _make_mock_eps(entries):

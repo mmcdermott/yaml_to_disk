@@ -33,6 +33,10 @@ class TOMLFile(FileType):
         ...     fp.read_text().strip()
         'key = "value"'
 
+        Nested tables are also valid:
+
+        >>> TOMLFile.validate({"key": "value", "nested": {"a": 1}})
+
         Invalid inputs raise ``AttributeError``:
 
         >>> TOMLFile.validate({1, 2})

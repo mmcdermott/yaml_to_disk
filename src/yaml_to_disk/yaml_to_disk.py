@@ -84,6 +84,47 @@ class YamlDisk:
     rather than creating new instances.
 
     If this package is installed as a plugin, it will automatically be available as a doctest fixture.
+
+    Examples:
+        As a context manager, the singleton creates a temporary directory and tears it down on exit:
+
+        >>> data = {"sub/": {"a.txt": "hello"}, "b.txt": "world"}
+        >>> with yaml_disk(data) as root:
+        ...     (root / "sub" / "a.txt").read_text()
+        ...     (root / "b.txt").read_text()
+        'hello'
+        'world'
+        >>> root.exists()
+        False
+
+        Called with an explicit ``root_dir``, it writes into that directory and returns the
+        path. ``root_dir`` may be either a :class:`pathlib.Path` or a string:
+
+        >>> with tempfile.TemporaryDirectory() as tmp:
+        ...     result = yaml_disk({"a.txt": "hi"}, root_dir=tmp)
+        ...     result == Path(tmp)
+        ...     (Path(tmp) / "a.txt").read_text()
+        True
+        'hi'
+
+        A ``root_dir`` that is not a string or ``Path`` raises ``TypeError``; missing or
+        non-directory paths raise the corresponding filesystem errors:
+
+        >>> yaml_disk({"a.txt": "hi"}, root_dir=123)
+        Traceback (most recent call last):
+            ...
+        TypeError: root_dir must be a string or Path, got <class 'int'>
+
+        >>> yaml_disk({"a.txt": "hi"}, root_dir="/nonexistent/abc123xyz/yd")
+        Traceback (most recent call last):
+            ...
+        FileNotFoundError: root_dir does not exist: /nonexistent/abc123xyz/yd
+
+        >>> with tempfile.NamedTemporaryFile() as tmp:
+        ...     yaml_disk({"a.txt": "hi"}, root_dir=tmp.name)
+        Traceback (most recent call last):
+            ...
+        NotADirectoryError: root_dir is not a directory: ...
     """
 
     _temp_dir: tempfile.TemporaryDirectory | None

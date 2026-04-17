@@ -87,34 +87,6 @@ def test_file_write_validation_failure(tmp_path: Path):
         f.write(tmp_path)
 
 
-def test_call_with_str_root_dir(tmp_path: Path):
-    """YamlDisk.__call__ accepts a string root_dir."""
-    yd = YamlDisk()
-    result = yd({"a.txt": "hi"}, root_dir=str(tmp_path))
-    assert result == Path(str(tmp_path))
-    assert (tmp_path / "a.txt").read_text() == "hi"
-
-
-def test_call_with_invalid_root_dir_type():
-    yd = YamlDisk()
-    with pytest.raises(TypeError, match="root_dir must be a string or Path"):
-        yd({"a.txt": "hi"}, root_dir=123)
-
-
-def test_call_with_nonexistent_root_dir(tmp_path: Path):
-    yd = YamlDisk()
-    with pytest.raises(FileNotFoundError, match="root_dir does not exist"):
-        yd({"a.txt": "hi"}, root_dir=tmp_path / "nonexistent")
-
-
-def test_call_with_file_as_root_dir(tmp_path: Path):
-    f = tmp_path / "a_file"
-    f.write_text("x")
-    yd = YamlDisk()
-    with pytest.raises(NotADirectoryError, match="root_dir is not a directory"):
-        yd({"a.txt": "hi"}, root_dir=f)
-
-
 def test_parse_yaml_contents_invalid_type():
     with pytest.raises(TypeError, match="YAML contents must be a dictionary or list"):
         YamlDisk._parse_yaml_contents("not a dict or list")

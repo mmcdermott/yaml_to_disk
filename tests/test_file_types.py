@@ -1,7 +1,6 @@
-"""Tests for file type handlers that don't require optional dependencies."""
+"""Unit tests for paths that require mocking or module reloading and can't be expressed as doctests."""
 
 import importlib
-from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -10,17 +9,6 @@ import yaml_to_disk.file_types.parquet as parquet_mod
 import yaml_to_disk.file_types.toml as toml_mod
 import yaml_to_disk.file_types.yaml
 from yaml_to_disk.file_types.csv import CSVFile
-from yaml_to_disk.file_types.tsv import TSVFile
-
-# --- FileType base class ---
-
-
-class TestFileTypeBase:
-    def test_cannot_instantiate(self):
-        """FileType.__init__ raises TypeError to prevent instantiation."""
-        with pytest.raises(TypeError, match="should not be instantiated"):
-            CSVFile()
-
 
 # --- YAMLFile CDumper fallback ---
 
@@ -79,28 +67,11 @@ class TestTomlLazyImportMissing:
             toml_mod.tomli_w = saved
 
 
-# --- TSVFile (no optional deps needed) ---
-
-
-class TestTSVFile:
-    def test_write_and_read(self, tmp_path: Path):
-        fp = tmp_path / "data.tsv"
-        TSVFile.write(fp, {"Name": ["Alice", "Bob"], "Age": [30, 25]})
-        text = fp.read_text().strip()
-        assert text == "Name\tAge\nAlice\t30\nBob\t25"
-
-    def test_validate_column_map(self):
-        TSVFile.validate({"a": [1, 2], "b": [3, 4]})
-
-    def test_matches(self):
-        assert TSVFile.matches(Path("foo.tsv"))
-        assert not TSVFile.matches(Path("foo.txt"))
-
-
-# --- CSVFile edge cases ---
+# --- CSVFile internal branches not reachable through public API ---
 
 
 class TestCSVFileEdgeCases:
     def test_parse_list_lines_row_not_a_list(self):
+        """_parse_list_lines rejects a non-list row; not reachable via the public _parse dispatch."""
         with pytest.raises(ValueError, match="Row 0 is not a list"):
             CSVFile._parse_list_lines([["Name", "Age"], "not a list"])

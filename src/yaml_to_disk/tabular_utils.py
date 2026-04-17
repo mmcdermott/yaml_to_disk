@@ -4,7 +4,30 @@ from typing import Any
 
 
 def validate_column_map(column_map: dict[str, list[Any]]) -> None:
-    """Validate a mapping of column names to column values."""
+    """Validate a mapping of column names to column values.
+
+    A valid column-map has string keys and equal-length list values:
+
+        >>> validate_column_map({"a": [1, 2], "b": [3, 4]})
+        >>> validate_column_map({})
+
+    Non-string keys, non-list values, and ragged columns are rejected:
+
+        >>> validate_column_map({1: [1, 2]})
+        Traceback (most recent call last):
+            ...
+        ValueError: Column-maps must have all string keys; got 1 (int)
+
+        >>> validate_column_map({"a": "x"})
+        Traceback (most recent call last):
+            ...
+        ValueError: Column-maps must have all list values; got cols a (str)
+
+        >>> validate_column_map({"a": [1, 2], "b": [3]})
+        Traceback (most recent call last):
+            ...
+        ValueError: Column-maps must have all lists of the same length 2; got b (1)
+    """
     if not column_map:
         return
 
@@ -24,7 +47,28 @@ def validate_column_map(column_map: dict[str, list[Any]]) -> None:
 
 
 def validate_row_map_list(rows: list[dict[str, Any]]) -> list[str]:
-    """Validate a list of row dictionaries and return the field names."""
+    """Validate a list of row dictionaries and return the field names.
+
+    On success, returns the ordered list of fields derived from the first row:
+
+        >>> validate_row_map_list([{"a": 1, "b": 2}, {"a": 3, "b": 4}])
+        ['a', 'b']
+        >>> validate_row_map_list([])
+        []
+
+    Rows with missing or extra keys, or non-string keys in the first row, are rejected:
+
+        >>> validate_row_map_list([{"a": 1, "b": 2}, {"a": 3}])
+        Traceback (most recent call last):
+            ...
+        ValueError: Row-maps must be consistent; got
+        Row 1 has missing keys ['b']
+
+        >>> validate_row_map_list([{1: 2}])
+        Traceback (most recent call last):
+            ...
+        ValueError: Column-maps must have all string keys; got [1]
+    """
     if not rows:
         return []
 
