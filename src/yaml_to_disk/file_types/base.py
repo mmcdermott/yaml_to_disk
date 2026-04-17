@@ -4,7 +4,17 @@ from typing import Any, ClassVar
 
 
 class FileType(abc.ABC):
-    """Abstract base class for file types."""
+    """Abstract base class for file types.
+
+    ``FileType`` and its concrete subclasses expose only classmethods; direct
+    instantiation is blocked:
+
+        >>> from yaml_to_disk.file_types.csv import CSVFile
+        >>> CSVFile()
+        Traceback (most recent call last):
+            ...
+        TypeError: CSVFile should not be instantiated
+    """
 
     extension: ClassVar[str | frozenset[str] | None] = None
 
@@ -36,7 +46,7 @@ class FileType(abc.ABC):
         Raises:
             Exception: If the contents are invalid.
         """
-        pass
+        pass  # pragma: no cover - abstract
 
     @classmethod
     @abc.abstractmethod
@@ -47,4 +57,4 @@ class FileType(abc.ABC):
             file_path: Path to the file.
             contents: Content to write to the file.
         """
-        pass
+        pass  # pragma: no cover - abstract

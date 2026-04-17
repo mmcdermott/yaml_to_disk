@@ -13,6 +13,34 @@ class FileTypeMatcher:
 
     This class checks the python entry points to identify all registered file types and loads them, then
     dynamically matches files specified via getitem to appropriate file type.
+
+    The singleton :data:`FILE_TYPE_MATCHER` is constructed from the installed entry points and can be
+    called with either an extension string or a :class:`pathlib.Path`:
+
+        >>> from yaml_to_disk.file_matchers import FILE_TYPE_MATCHER
+        >>> FILE_TYPE_MATCHER(".json").__name__
+        'JSONFile'
+        >>> FILE_TYPE_MATCHER(Path("foo.csv")).__name__
+        'CSVFile'
+
+    ``YAMLFile`` registers both ``.yaml`` and ``.yml``, so either resolves:
+
+        >>> FILE_TYPE_MATCHER(Path("foo.yml")).__name__
+        'YAMLFile'
+
+    Extensions not claimed by any registered file type raise ``ValueError``:
+
+        >>> FILE_TYPE_MATCHER(".unknown")
+        Traceback (most recent call last):
+            ...
+        ValueError: No file type found for .unknown
+
+    Keys that are neither a string nor a :class:`pathlib.Path` raise ``TypeError``:
+
+        >>> FILE_TYPE_MATCHER(123)
+        Traceback (most recent call last):
+            ...
+        TypeError: Key must be a string or Path; got <class 'int'>
     """
 
     def __init__(self):

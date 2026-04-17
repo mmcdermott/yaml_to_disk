@@ -31,7 +31,7 @@ parquet = ["pyarrow"]
 toml = ["tomli-w"]
 
 [tool.coverage.run]
-source = ["src"]
+source = ["yaml_to_disk"]
 branch = true
 
 [tool.coverage.report]

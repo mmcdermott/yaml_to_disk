@@ -9,10 +9,10 @@ tomli_w = None
 def _load_tomli_w():
     """Lazily import ``tomli_w`` and cache the module."""
     global tomli_w
-    if tomli_w is None:  # pragma: no cover - optional dependency
+    if tomli_w is None:
         try:
             import tomli_w as _tomli_w
-        except Exception as e:  # pragma: no cover - optional dependency
+        except Exception as e:
             raise ImportError("tomli-w is required to use TOMLFile") from e
 
         tomli_w = _tomli_w
@@ -32,6 +32,10 @@ class TOMLFile(FileType):
         ...     TOMLFile.write(fp, {"key": "value"})
         ...     fp.read_text().strip()
         'key = "value"'
+
+        Nested tables are also valid:
+
+        >>> TOMLFile.validate({"key": "value", "nested": {"a": 1}})
 
         Invalid inputs raise ``AttributeError``:
 
