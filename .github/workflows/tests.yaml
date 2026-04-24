@@ -18,32 +18,21 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - name: Setup package (no optional extras)
+        uses: ./.github/actions/setup
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install test dependencies
-        run: |
-          pip install -e .[tests]
-
-      #----------------------------------------------
-      #              run test suite
-      #----------------------------------------------
       - name: Run tests without optional deps
-        run: |
-          pytest -v --cov=yaml_to_disk
+        run: uv run pytest -v --cov=yaml_to_disk
 
-      - name: Install optional dependencies
-        run: |
-          pip install -e .[parquet,toml]
+      - name: Install optional extras
+        run: uv sync --locked --group dev --extra parquet --extra toml
 
       - name: Run tests with optional deps
-        run: |
-          pytest -v --cov=yaml_to_disk --cov-append --cov-report=xml
+        run: uv run pytest -v --cov=yaml_to_disk --cov-append --cov-report=xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5

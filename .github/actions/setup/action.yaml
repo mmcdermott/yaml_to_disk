@@ -1,0 +1,32 @@
+name: Setup Package
+description: Install Python, uv, and sync the project's locked dependencies.
+inputs:
+  python-version:
+    description: The Python version to use for the setup.
+    required: true
+    default: "3.12"
+  extras:
+    description: Space-separated list of optional-dependency extras to also sync (e.g., "parquet toml").
+    required: false
+    default: ""
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "${{ inputs.python-version }}"
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v6
+      with:
+        enable-cache: true
+        cache-suffix: "py${{ inputs.python-version }}"
+
+    - name: Sync dev dependencies
+      shell: bash
+      run: |
+        extras_flags=""
+        for extra in ${{ inputs.extras }}; do
+          extras_flags="$extras_flags --extra $extra"
+        done
+        uv sync --locked --group dev $extras_flags
