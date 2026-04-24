@@ -120,7 +120,7 @@ def test_parse_yaml_contents_bare_filename():
 
 
 def test_parse_yaml_contents_extensionless_name_as_dir():
-    """A key without a file extension is treated as a directory."""
+    """A key without a file extension with dict/list contents is treated as a directory."""
     parsed = YamlDisk._parse_yaml_contents({"mydir": ["file.txt"]})
     assert len(parsed) == 1
     assert isinstance(parsed[0], Directory)
