@@ -125,6 +125,23 @@ class YamlDisk:
         Traceback (most recent call last):
             ...
         NotADirectoryError: root_dir is not a directory: ...
+
+        Extensionless filenames (``Makefile``, ``LICENSE``, ``Dockerfile``) are treated as
+        files when their contents are a scalar. A trailing ``/`` or dict/list contents still
+        identifies a directory:
+
+        >>> data = {
+        ...     "Makefile": "echo hello",
+        ...     "LICENSE": "MIT",
+        ...     "src/": {"main.py": "print('hi')"},
+        ... }
+        >>> with yaml_disk(data) as root:
+        ...     (root / "Makefile").read_text()
+        ...     (root / "LICENSE").read_text()
+        ...     (root / "src" / "main.py").read_text()
+        'echo hello'
+        'MIT'
+        "print('hi')"
     """
 
     _temp_dir: tempfile.TemporaryDirectory | None
@@ -215,7 +232,9 @@ class YamlDisk:
 
                     name = Path(raw_name)
 
-                    is_dir_name = raw_name.endswith("/") or name.suffix == ""
+                    is_dir_name = raw_name.endswith("/") or (
+                        name.suffix == "" and isinstance(contents, dict | list)
+                    )
 
                     if is_dir_name:
                         nested_contents = cls._parse_yaml_contents(contents)
