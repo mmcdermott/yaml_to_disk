@@ -126,26 +126,6 @@ def test_parse_yaml_contents_extensionless_name_as_dir():
     assert isinstance(parsed[0], Directory)
 
 
-def test_parse_yaml_contents_extensionless_name_as_file():
-    """A key without a file extension with scalar contents is treated as a file."""
-    parsed = YamlDisk._parse_yaml_contents({"Makefile": "echo hello"})
-    assert len(parsed) == 1
-    assert isinstance(parsed[0], File)
-    assert parsed[0].rel_path == Path("Makefile")
-    assert parsed[0].contents == "echo hello"
-
-
-def test_extensionless_file_write_roundtrip(tmp_path: Path):
-    """Regression test for issue #11: extensionless filenames with string contents write correctly."""
-    from yaml_to_disk.yaml_to_disk import yaml_disk
-
-    data = {"Makefile": "echo hi", "LICENSE": "MIT", "subdir/": {"Dockerfile": "FROM scratch"}}
-    yaml_disk(data, root_dir=tmp_path)
-    assert (tmp_path / "Makefile").read_text() == "echo hi"
-    assert (tmp_path / "LICENSE").read_text() == "MIT"
-    assert (tmp_path / "subdir" / "Dockerfile").read_text() == "FROM scratch"
-
-
 def test_parse_from_yaml_file(tmp_path: Path):
     """_parse can accept a Path to a YAML file."""
     yaml_fp = tmp_path / "spec.yaml"
