@@ -1,0 +1,17 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "yaml_to_disk",
+  "description": "Materialize directory trees from YAML for tests and fixtures. Inverse-friendly format supports YAML strings, YAML files, Python dicts, and Python lists as input, with a pluggable file-type system for .txt, .json, .yaml, .csv, .tsv, .toml, .parquet, and .pkl outputs.",
+  "folders": ["src/yaml_to_disk"],
+  "excludeFolders": ["tests"],
+  "rules": [
+    "Prefer the pre-constructed singleton `yaml_disk` (lowercase) over instantiating `YamlDisk()` directly.",
+    "Use `yaml_disk` as a context manager for ephemeral fixtures: `with yaml_disk(data) as root: ...` creates a temp directory that is cleaned up on exit.",
+    "Use `yaml_disk(data, root_dir=...)` for persistent writes into an existing directory; `root_dir` may be a string or `pathlib.Path`.",
+    "Installing this package auto-registers `yaml_disk` as a pytest doctest-namespace fixture. No imports are needed inside doctests once the package is installed.",
+    "Directory vs. file disambiguation in YAML input: a key ending in `/` is always a directory; a key without a suffix is a directory only when its contents are a dict or list (scalar contents are written as a file via the `.txt` fallback).",
+    "Supported file types register via the `yaml_to_disk.file_types` entry-point group. Each `FileType` subclass defines an `extension` class variable plus `validate` and `write` classmethods; adding a new extension is a matter of publishing a `FileType` subclass under that entry point.",
+    "Optional file-type dependencies are gated: `pyarrow` is required for `.parquet`, `tomli-w` is required for `.toml`. Both are lazily imported so the base install stays minimal.",
+    "Validation errors raise `ValueError`; pre-existing-file conflicts raise `FileExistsError` unless `do_overwrite=True` is passed; trying to overwrite a directory with a file still raises `IsADirectoryError` by design."
+  ]
+}
